@@ -22,7 +22,7 @@ def num_digs_with_up_to_d_digits(d):
     # 10S = d*10**(d + 1) - sum_(i = 1)^d 10**i
     # 90S = 9*d*10**(d + 1) - 10**(d + 1) + 10
     # 9S = (9*d - 1)*10**d + 1
-    return ((9*d - 1)*10**d + 1)/9
+    return ((9*d - 1)*pow(10, d) + 1)/9
 
 def nth_digit_of_frac_part(n):
     num_digits = 1
@@ -39,13 +39,13 @@ def nth_digit_of_frac_part(n):
     # Since there are numbers_prior numbers of num_digits digits prior to
     # the number we are interested in, we need to calculate which number it is
     # The smallest number with num_digits digits is 10**(num_digits - 1)
-    num_of_interest = str(10**(num_digits - 1) + numbers_prior)
+    num_of_interest = str(pow(10, (num_digits - 1)) + numbers_prior)
     return int(num_of_interest[digit_place_in_number - 1])
 
 def main(verbose=False):
     # d_1 X d_10 X d_100 X d_1000 X d_10000 X d_100000 X d_1000000
-    result = [nth_digit_of_frac_part(10**exponent) for exponent in range(7)]
-    digit_display = ['d_%s = %s' % (10**i, digit)
+    result = [nth_digit_of_frac_part(pow(10, exponent)) for exponent in range(7)]
+    digit_display = ['d_%s = %s' % (pow(10, i), digit)
                      for i, digit in enumerate(result)]
     if verbose:
         return '%s.\nThe digits are as follows: %s' % (

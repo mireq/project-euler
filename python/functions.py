@@ -28,11 +28,13 @@ def get_data(problem_number):
     to be named no---.txt where --- is the zero padded
     problem number
     """
-    filename = 'no%s.txt' % str(problem_number).zfill(3)
+    problem_nr = str(problem_number)
+    problem_nr = '0' * (3 - len(problem_nr)) + problem_nr
+    filename = 'no%s.txt' % problem_nr
     absolute_path = '%s/%s' % (DATA_PATH, filename)
-    with open(absolute_path) as fh:
-        # fails if file doesn't exist
-        result = fh.read()
+    fh = open(absolute_path, 'r')
+    result = fh.read()
+    fh.close()
     return result
 
 # 26
@@ -61,7 +63,9 @@ def recurrence_next(relation, values):
     if len(relation) != len(values):
         raise ValueError("Poorly specified recurrence")
     recurrence_order = len(relation)
-    next_val = sum(relation[i]*values[i] for i in range(recurrence_order))
+    next_val = 0
+    for i in range(recurrence_order):
+        next_val += relation[i]*values[i]
     return values[1:] + [next_val] # copies values (doesn't change inputs)
 
 # 4, 36, 55
@@ -183,6 +187,41 @@ def first_prime_divisor(n, prime_list=None):
         return [divisor, n/divisor]
     raise ValueError("Bad input %s." % n)
 
+
+def prime_factors_hash(n, unique, hash_):
+    if n == 1:
+        hash_[1] = []
+        return []
+    return hash_[n]
+
+    prime, quotient = first_prime_divisor(n)
+
+    remaining, count = robust_divide(n, prime, include_count=True)
+    if unique:
+        result = [prime] + prime_factors(remaining,
+                                         unique=unique,
+                                         hash_=hash_)
+    else:
+        result = [prime] * count + prime_factors(remaining,
+                                                 unique=unique,
+                                                 hash_=hash_)
+
+    hash_[n] = result
+
+    return result
+
+
+def prime_factors_simple(n):
+    if n == 1:
+        return []
+
+    prime, quotient = first_prime_divisor(n)
+
+    remaining, count = robust_divide(n, prime, include_count=True)
+    result = [prime] * count + prime_factors_simple(remaining)
+
+    return result
+
 # 3, 12, 47
 def prime_factors(n, unique=False, hash_=None):
     if n == 1:
@@ -299,7 +338,7 @@ def sieve(n):
 
     for i in xrange(2, final_check + 1):
         if to_check[i]:
-            for j in xrange(i**2, n + 1, i):
+            for j in xrange(i * i, n + 1, i):
                 to_check[j] = False
 
     return [i for i in range(2, n + 1) if to_check[i]]

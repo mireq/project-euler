@@ -7,3 +7,4 @@ parse.py
 node_modules
 #*#
 *class
+python/benchmark-rpython-c
